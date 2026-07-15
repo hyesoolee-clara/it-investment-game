@@ -28,9 +28,11 @@ Through this activity, students can better understand the relationship between:
 
 ## Game Demonstration
 
-▶️ **[Watch the game demonstration](assets/Picture1.png)](assets/game-demo.mp4)**
+▶️ Click the image below to watch the game demonstration.
 
-> Depending on your browser, the video may open in a new tab or be downloaded to your device.
+<a href="assets/game-demo.mp4">
+  <img src="assets/Picture1.png" alt="Watch the game demonstration" width="700">
+</a>
 
 ## Instructional Slides
 
