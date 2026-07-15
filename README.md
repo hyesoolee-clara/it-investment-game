@@ -28,7 +28,7 @@ Through this activity, students can better understand the relationship between:
 
 ## Game Demonstration
 
-▶️ **[Watch the game demonstration](assets/game-demo.mov)**
+▶️ **[Watch the game demonstration](assets/Picture1.png)](assets/game-demo.mp4)**
 
 > Depending on your browser, the video may open in a new tab or be downloaded to your device.
 
