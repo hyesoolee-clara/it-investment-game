@@ -1,0 +1,28 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "pitgame": {
+      "sessions": {
+        "$session": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.token.role === 'instructor'",
+          "players": {
+            "$uid": {
+              ".write": "auth != null && ($uid === auth.uid || auth.token.role === 'instructor')",
+              ".validate": "auth.token.role === 'instructor' || (newData.hasChildren(['id','nick','submitted']) && newData.child('id').val() === $uid && newData.child('nick').isString() && newData.child('nick').val().length > 0 && newData.child('nick').val().length <= 20 && newData.child('submitted').isNumber())"
+            }
+          },
+          "submissions": {
+            "$uid": {
+              "$round": {
+                ".write": "auth != null && (auth.token.role === 'instructor' || ($uid === auth.uid && root.child('pitgame/sessions/'+$session+'/state/phase').val() === 'invest'))",
+                ".validate": "auth.token.role === 'instructor' || (newData.hasChildren(['pid','round','alloc']) && newData.child('pid').val() === $uid && newData.child('round').val() === root.child('pitgame/sessions/'+$session+'/state/round').val() && newData.child('alloc').hasChildren(['SEC','DATA','SCALE','UX','TRUST','INNO']) && newData.child('alloc/SEC').isNumber() && newData.child('alloc/DATA').isNumber() && newData.child('alloc/SCALE').isNumber() && newData.child('alloc/UX').isNumber() && newData.child('alloc/TRUST').isNumber() && newData.child('alloc/INNO').isNumber() && newData.child('alloc/SEC').val() >= 0 && newData.child('alloc/DATA').val() >= 0 && newData.child('alloc/SCALE').val() >= 0 && newData.child('alloc/UX').val() >= 0 && newData.child('alloc/TRUST').val() >= 0 && newData.child('alloc/INNO').val() >= 0 && newData.child('alloc/SEC').val() + newData.child('alloc/DATA').val() + newData.child('alloc/SCALE').val() + newData.child('alloc/UX').val() + newData.child('alloc/TRUST').val() + newData.child('alloc/INNO').val() === 100)"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

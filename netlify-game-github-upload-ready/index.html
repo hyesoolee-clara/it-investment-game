@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Platform IT Investment Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#FAFAF8;--surface:#FFFFFF;--surface2:#F4F3EF;--border:#E2E0D8;--border2:#C8C6BC;--text:#1A1916;--text2:#6B6960;--text3:#9B9A94;--blue:#1B5FCC;--blue-bg:#EBF0FB;--blue-border:#B8CBF5;--green:#1A7A4A;--green-bg:#E8F7EE;--green-border:#A8DEC0;--amber:#A05A00;--amber-bg:#FEF3E0;--amber-border:#F5C97A;--red:#C0291A;--red-bg:#FDEEEB;--red-border:#F5B4AC;--gold:#B8860B;--gold-bg:#FEF8E1;--r:8px;--rl:12px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;max-width:760px;margin:0 auto;padding:2rem 1.25rem 4rem;}
+.screen.active{display:block;}
+h1{font-size:26px;font-weight:600;letter-spacing:-0.5px;}
+h2{font-size:20px;font-weight:600;letter-spacing:-0.3px;margin-bottom:16px;}
+h3{font-size:15px;font-weight:600;margin-bottom:8px;}
+p{font-size:14px;color:var(--text2);line-height:1.65;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.btn:hover{background:var(--surface2);}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn-primary:hover{background:#1550B8;}
+.btn-success{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-danger{background:var(--red-bg);border-color:var(--red-border);color:var(--red);}
+.btn-lg{padding:13px 32px;font-size:15px;border-radius:var(--rl);}
+.btn-xl{padding:16px 40px;font-size:16px;border-radius:var(--rl);}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:12px;}
+.card-info{background:var(--blue-bg);border-color:var(--blue-border);}
+.card-success{background:var(--green-bg);border-color:var(--green-border);}
+.card-amber{background:var(--amber-bg);border-color:var(--amber-border);}
+.card-gold{background:var(--gold-bg);border:2px solid var(--gold);}
+.field-label{font-size:13px;font-weight:500;color:var(--text2);display:block;margin-bottom:6px;}
+.input{width:100%;padding:9px 13px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.15s;}
+.input:focus{border-color:var(--blue);}
+.field{margin-bottom:16px;}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.tag-blue{background:var(--blue-bg);color:var(--blue);}
+.tag-green{background:var(--green-bg);color:var(--green);}
+.tag-amber{background:var(--amber-bg);color:var(--amber);}
+.tag-gray{background:var(--surface2);color:var(--text2);}
+hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.metric{background:var(--surface2);border-radius:var(--r);padding:14px 12px;text-align:center;}
+.metric-val{font-size:26px;font-weight:600;color:var(--text);}
+.metric-lbl{font-size:11px;font-weight:500;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+.alloc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.alloc-item{border:1.5px solid var(--border);border-radius:var(--rl);padding:12px 10px;text-align:center;transition:border-color .15s,background .15s;}
+.alloc-item:focus-within{border-color:var(--blue);background:var(--blue-bg);}
+.alloc-item.filled{border-color:var(--blue-border);}
+.alloc-item.over{border-color:var(--red);background:var(--red-bg);}
+.alloc-cat{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.alloc-full{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.3;}
+.alloc-num{width:100%;border:none;background:transparent;text-align:center;font-size:26px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);outline:none;padding:0;}
+.alloc-num::-webkit-inner-spin-button,.alloc-num::-webkit-outer-spin-button{-webkit-appearance:none;}
+.total-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:var(--rl);border:1.5px solid var(--border);margin-bottom:14px;transition:all .2s;}
+.total-bar.ok{border-color:var(--green);background:var(--green-bg);}
+.total-bar.over{border-color:var(--red);background:var(--red-bg);}
+.total-bar.under{border-color:var(--amber);background:var(--amber-bg);}
+.total-label{font-size:13px;font-weight:500;}
+.total-num{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;}
+.rank-table{width:100%;}
+.rank-row{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);gap:10px;}
+.rank-row:last-child{border-bottom:none;}
+.rank-row.me{background:var(--amber-bg);}
+.rank-medal{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.medal-1{background:#FFD700;color:#7A5900;}
+.medal-2{background:#C0C0C0;color:#444;}
+.medal-3{background:#CD7F32;color:#fff;}
+.rank-nick{flex:1;font-size:14px;font-weight:500;}
+.rank-score{font-size:14px;font-weight:600;font-family:'DM Mono',monospace;}
+.pos{color:var(--green);}
+.neg{color:var(--red);}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.tab{padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2);transition:all .15s;white-space:nowrap;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--blue);transition:width .4s;}
+.status-ok{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.status-wait{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .65s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flex-between{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+select.input{cursor:pointer;}
+.mono{font-family:'DM Mono',monospace;}
+.err{color:var(--red);font-size:13px;margin-top:6px;}
+.event-reveal{border:2px solid var(--blue);border-radius:var(--rl);padding:1rem 1.25rem;background:var(--blue-bg);margin-bottom:14px;}
+.event-reveal h3{color:var(--blue);}
+.hero{text-align:center;padding:3rem 1rem 2rem;}
+.score-big{font-size:36px;font-weight:700;font-family:'DM Mono',monospace;}
+.inv-table{width:100%;border-collapse:collapse;font-size:13px;}
+.inv-table th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);padding:8px 10px;border-bottom:1px solid var(--border);text-align:center;}
+.inv-table th:first-child{text-align:left;}
+.inv-table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:center;color:var(--text2);}
+.inv-table td:first-child{text-align:left;font-weight:500;color:var(--text);}
+.inv-table tr:last-child td{border-bottom:none;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.8s ease-in-out infinite;}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0;}
+@media(max-width:540px){.screen{padding:1.5rem 1rem 3rem;}h1{font-size:22px;}.metric-val{font-size:22px;}}
+.footer-banner{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:7px 12px;text-align:center;font-size:11px;color:var(--text3);z-index:50;}
+.footer-banner a{color:var(--text3);text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="hero">
+    <div style="font-size:56px;margin-bottom:20px;">🏢</div>
+    <h1 style="margin-bottom:10px;">Platform IT Investment Game</h1>
+    <p style="max-width:440px;margin:0 auto 2rem;">A strategy simulation where you manage a digital platform's IT investment across five growth stages. Every decision counts.</p>
+    <div class="btn-group" style="justify-content:center;">
+      <button class="btn btn-primary btn-xl" onclick="goStudent()">👨‍🎓 Join as Student</button>
+      <button class="btn btn-lg" onclick="goProf()">👨‍🏫 Instructor Login</button>
+    </div>
+  </div>
+  <div style="max-width:520px;margin:0 auto;">
+    <div class="card" style="padding:1rem 1.25rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;">
+        <div><div style="font-size:22px;margin-bottom:4px;">5</div><div style="font-size:12px;color:var(--text2);">Rounds</div></div>
+        <div><div style="font-size:22px;margin-bottom:4px;">6</div><div style="font-size:12px;color:var(--text2);">IT Categories</div></div>
+        <div><div style="font-size:22px;margin-bottom:4px;">15</div><div style="font-size:12px;color:var(--text2);">Event Cards</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FIREBASE SETUP -->
+<div id="screen-setup" class="screen">
+  <h2>⚙️ One-Time Firebase Setup</h2>
+  <div class="card card-amber" style="margin-bottom:16px;">
+    <p>This game uses a <strong>free Firebase Realtime Database</strong> to sync students and instructor in real time. Setup takes ~3 minutes and only needs to be done once by the instructor.</p>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;margin-bottom:14px;">
+      <span class="step-num">1</span>
+      <div><strong style="font-size:14px;">Create a free Firebase project</strong>
+        <p style="margin-top:4px;">Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--blue);font-weight:500;">console.firebase.google.com</a> → <em>Add project</em> (disable Google Analytics) → Create project.</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;margin-bottom:14px;">
+      <span class="step-num">2</span>
+      <div><strong style="font-size:14px;">Enable Realtime Database</strong>
+        <p style="margin-top:4px;">Left sidebar → Build → <strong>Realtime Database</strong> → Create Database → pick any region → <strong>Start in test mode</strong> → Enable.</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;margin-bottom:14px;">
+      <span class="step-num">3</span>
+      <div><strong style="font-size:14px;">Get your web app config</strong>
+        <p style="margin-top:4px;">⚙️ (top-left gear) → Project settings → Your apps → click <strong>&lt;/&gt;</strong> → Register app → copy the <code>firebaseConfig</code> object shown.</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;">
+      <span class="step-num">4</span>
+      <div style="flex:1;">
+        <strong style="font-size:14px;">Paste the config here</strong>
+        <p style="margin-top:4px;margin-bottom:10px;">Paste the full config JSON object below, then click <em>Save &amp; Connect</em>. The config is saved in your browser only.</p>
+        <textarea id="fb-input" class="input" rows="9" style="font-family:'DM Mono',monospace;font-size:12px;resize:vertical;" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "databaseURL": "https://your-app-default-rtdb.firebaseio.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123:web:abc"
+}'></textarea>
+        <div id="fb-err" class="err" style="display:none;"></div>
+        <div class="btn-group" style="margin-top:10px;">
+          <button class="btn btn-primary" onclick="saveFbConfig()">Save &amp; Connect</button>
+          <button class="btn" onclick="show('screen-landing')">← Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT JOIN -->
+<div id="screen-student-join" class="screen">
+  <h2>Join the Game</h2>
+  <div class="card">
+    <div class="field">
+      <label class="field-label">Your Nickname</label>
+      <input id="s-nick" class="input" placeholder="e.g. StrategyKing, DataWizard…" maxlength="20"/>
+    </div>
+    <div class="field">
+      <label class="field-label">Session Code <span style="color:var(--text3);font-weight:400;">(from your instructor)</span></label>
+      <input id="s-sess" class="input mono" placeholder="e.g. AB3X7K" maxlength="6" style="text-transform:uppercase;letter-spacing:3px;font-size:18px;" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')studentJoin()"/>
+    </div>
+    <div id="s-err" class="err" style="display:none;"></div>
+    <div class="btn-group">
+      <button class="btn btn-primary btn-lg" onclick="studentJoin()">Enter Game →</button>
+      <button class="btn" onclick="show('screen-landing')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROF LOGIN -->
+<div id="screen-prof-login" class="screen">
+  <h2>Instructor Login</h2>
+  <div class="card">
+    <div class="field">
+      <label class="field-label">Admin Password</label>
+      <input id="p-pass" class="input" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')profLogin()"/>
+    </div>
+    <div id="p-err" class="err" style="display:none;"></div>
+    <div class="btn-group">
+      <button class="btn btn-primary btn-lg" onclick="profLogin()">Login →</button>
+      <button class="btn" onclick="show('screen-landing')">← Back</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:8px;background:var(--surface2);">
+    <p style="font-size:13px;">Don&#39;t have the password? Please contact <a href="mailto:hyesoo.lee@stern.nyu.edu" style="color:var(--blue);">hyesoo.lee@stern.nyu.edu</a> for access.</p>
+  </div>
+</div>
+
+<!-- PROF DASHBOARD -->
+<div id="screen-prof-dashboard" class="screen">
+  <div class="flex-between" style="margin-bottom:20px;">
+    <div>
+      <h2 style="margin:0;">Instructor Dashboard</h2>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+        <span class="live-dot"></span>
+        <span style="font-size:13px;color:var(--text2);">Live — Session: <strong id="p-sess-lbl" class="mono"></strong></span>
+      </div>
+    </div>
+    <button class="btn btn-danger" style="padding:7px 14px;font-size:13px;" onclick="resetGame()">⟳ Reset Game</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="profTab(this,'overview')">Overview</div>
+    <div class="tab" onclick="profTab(this,'investments')">Investments</div>
+    <div class="tab" onclick="profTab(this,'events')">Event Cards</div>
+  </div>
+  <div id="p-tab-overview"></div>
+  <div id="p-tab-investments" style="display:none;"></div>
+  <div id="p-tab-events" style="display:none;"></div>
+</div>
+
+<!-- STUDENT GAME -->
+<div id="screen-student-game" class="screen">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);">Playing as</div>
+      <div style="font-size:16px;font-weight:600;" id="s-nick-display"></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <div class="metric" style="padding:8px 16px;"><div class="metric-val" id="s-total" style="font-size:20px;">0</div><div class="metric-lbl">Total Score</div></div>
+      <div class="metric" style="padding:8px 16px;"><div class="metric-val" id="s-rank" style="font-size:20px;">—</div><div class="metric-lbl">Rank</div></div>
+    </div>
+  </div>
+
+  <div id="s-phase-wait" style="display:none;">
+    <div class="card" style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto 14px;"></div><p>Waiting for the instructor to start the next round…</p></div>
+    <div id="s-lb-wait"></div>
+    <div id="s-cat-guide"></div>
+  </div>
+
+  <div id="s-phase-invest" style="display:none;">
+    <div class="card card-info" style="margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--blue);margin-bottom:2px;">Round <span id="s-rnum"></span></div>
+      <h3 id="s-stage" style="color:var(--blue);margin:0;font-size:16px;"></h3>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 14px;">Allocate 100 Investment Points</h3>
+      <div class="total-bar under" id="total-bar">
+        <div>
+          <div class="total-label">Total</div>
+          <div style="font-size:11px;margin-top:1px;" id="total-msg">0 pts remaining</div>
+        </div>
+        <div class="total-num" id="total-num" style="color:var(--amber);">0 / 100</div>
+      </div>
+      <div id="s-sliders"></div>
+      <hr/>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" onclick="submitAlloc()">Submit Allocation</button>
+        <button class="btn" onclick="resetSliders()">Clear All</button>
+      </div>
+      <div id="s-sub-msg" style="margin-top:8px;font-size:13px;font-weight:500;"></div>
+    </div>
+    <div class="card card-amber">
+      <h3 style="font-size:13px;margin-bottom:6px;">Investment Categories</h3>
+
+    </div>
+  </div>
+
+  <div id="s-phase-result" style="display:none;">
+    <div class="card">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px;">Round <span id="s-res-r"></span> Result</div>
+      <div class="event-reveal">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--blue);margin-bottom:3px;">Event Card Revealed</div>
+        <h3 id="s-res-name" style="font-size:17px;margin-bottom:4px;"></h3>
+        <p id="s-res-fml" style="font-size:12px;color:var(--blue);font-family:'DM Mono',monospace;"></p>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-val" id="s-res-rs" style="font-size:20px;"></div><div class="metric-lbl">Response Score</div></div>
+        <div class="metric"><div class="metric-val" id="s-res-bs" style="font-size:20px;"></div><div class="metric-lbl">Score</div></div>
+        <div class="metric"><div class="metric-val" id="s-res-adj"></div><div class="metric-lbl">Cumul. Adj.</div></div>
+      </div>
+      <div class="card card-gold" style="text-align:center;margin-top:8px;padding:1rem;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gold);margin-bottom:4px;">Final Round Score</div>
+        <div class="score-big" id="s-res-fs"></div>
+      </div>
+      <div id="s-res-alloc" style="margin-top:12px;"></div>
+      <div id="s-res-learn" style="margin-top:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--r);font-size:13px;color:var(--text2);line-height:1.6;border-left:3px solid var(--blue);"></div>
+    </div>
+    <div id="s-lb-result"></div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,set,get,onValue,update}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import{getAuth,signInAnonymously,signInWithCustomToken}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const CATS=['SEC','DATA','SCALE','UX','TRUST','INNO'];
+const CAT_LABEL={'SEC':'Cybersecurity','DATA':'Data Systems','SCALE':'Scalability','UX':'User Experience','TRUST':'Trust & Safety','INNO':'Innovation'};
+const CCOL={SEC:'#1B5FCC',DATA:'#1A7A4A',SCALE:'#6B3F9E',UX:'#A05A00',TRUST:'#C0291A',INNO:'#1E7A8A'};
+const STAGE={1:'Early Platform Stage',2:'Early-to-Mid Platform Stage',3:'Mid-Stage Platform',4:'Mid-to-Late Platform Stage',5:'Mature Platform Stage'};
+const EV_EXPLAIN={
+  '1A':'When a platform launches, server capacity (Scalability) determines whether users can actually access it. User Experience ensures the experience is smooth enough to retain first visitors — a bad first impression is nearly impossible to recover from.',
+  '1B':'New users who cannot figure out the platform leave immediately. User Experience investment shapes onboarding clarity. Data Systems helps personalize early content so users see relevant material from day one, reducing drop-off.',
+  '1C':'Early security vulnerabilities are especially dangerous because the platform has not yet built user trust. Cybersecurity investment determines how quickly vulnerabilities are detected and patched. Data Systems systems help log and trace anomalies.',
+  '2A':'Recommendations drive engagement and retention. Data Systems investment builds the infrastructure to collect and model user behavior. User Experience ensures recommendations are presented in a way users actually interact with.',
+  '2B':'Fake accounts erode trust across the entire platform. Trust & Safety investment funds detection systems and moderation policies. Cybersecurity prevents fake account creation at the authentication layer.',
+  '2C':'Responding to a better competitor app requires both polished User Experience (speed, design, usability) and Innovation (new features). Incremental User Experience fixes alone are rarely enough — innovation is needed to differentiate and pull users back.',
+  '3A':'Data breaches do not happen overnight — attackers probe systems over time. Cybersecurity investment determines how well those probes are detected and blocked. Trust & Safety governance limits what data is exposed if a breach occurs.',
+  '3B':'Outages during peak times reveal whether Scalability investment has kept pace with growth. Data Systems investment supports real-time monitoring and auto-scaling decisions. Without both, recovery is slow and revenue loss severe.',
+  '3C':'Fake reviews are hard to detect without Trust & Safety investment in moderation systems. Data Systems investment enables pattern detection — spotting timing anomalies, coordinated activity, and rating manipulation at scale.',
+  '4A':'Privacy regulation compliance requires Cybersecurity investment to encrypt and protect data. Data Systems investment determines whether the platform knows what data it holds, where it flows, and how to delete it on request.',
+  '4B':'Competitive AI features require Data Systems pipelines and model infrastructure. Innovation funds the engineering capability to build and ship those features. User Experience determines whether users can actually discover and adopt them.',
+  '4C':'API partnerships require Data Systems systems that expose clean, reliable feeds to partners. Scalability ensures infrastructure can handle the additional load. Innovation enables the platform to design compelling integration use cases.',
+  '5A':'Legacy technical debt accumulates when Data Systems and Scalability systems are not modernized over time. Resolving it requires Innovation investment to re-architect systems. Without all three, modernization becomes prohibitively expensive.',
+  '5B':'Global expansion multiplies infrastructure demands — Scalability determines geographic distribution capacity. Cybersecurity addresses compliance with international data laws. Data Systems supports localization and market-specific personalization.',
+  '5C':'A full trust crisis reflects years of underinvestment. Trust & Safety funds governance and user protection. Cybersecurity protects against the security incidents that trigger crises. Data Systems enables transparent audit trails and rapid incident response.',
+};
+
+const RE={1:['1A','1B','1C'],2:['2A','2B','2C'],3:['3A','3B','3C'],4:['4A','4B','4C'],5:['5A','5B','5C']};
+const EV={
+'1A':{name:'Launch Day Traffic Spike',f:a=>a.SCALE*.7+a.UX*.3,fs:'Scalability×0.7 + User Experience×0.3',c:[],l:'Platform growth can only be captured if the infrastructure and user experience are ready.'},
+'1B':{name:'Poor Onboarding Experience',f:a=>a.UX*.7+a.DATA*.3,fs:'User Experience×0.7 + Data Systems×0.3',c:[],l:'Attracting users is not enough. Platforms must help users quickly understand and experience value.'},
+'1C':{name:'First Security Vulnerability',f:a=>a.SEC*.8+a.DATA*.2,fs:'Cybersecurity×0.8 + Data Systems×0.2',c:[],l:'Early security investment prevents larger trust crises later.'},
+'2A':{name:'Recommendation Quality Problem',f:a=>a.DATA*.7+a.UX*.3,fs:'Data Systems×0.7 + User Experience×0.3',c:[],l:'Data systems are not just storage tools. They shape the platform experience.'},
+'2B':{name:'Fake Accounts Increase',f:a=>a.TRUST*.7+a.SEC*.3,fs:'Trust & Safety×0.7 + Cybersecurity×0.3',c:[],l:'As platforms grow, governance and participant quality become central management challenges.'},
+'2C':{name:'Competitor Improves App UX',f:a=>a.UX*.6+a.INNO*.4,fs:'User Experience×0.6 + Innovation×0.4',c:[],l:'Platform competition is often decided by the experience users actually feel.'},
+'3A':{name:'Data Breach Attempt',f:a=>a.SEC*.7+a.TRUST*.3,fs:'Cybersecurity×0.7 + Trust & Safety×0.3',c:['SEC'],l:'Cybersecurity must be built before the attack happens. It cannot be created instantly during a crisis.'},
+'3B':{name:'Peak-Time System Outage',f:a=>a.SCALE*.7+a.DATA*.3,fs:'Scalability×0.7 + Data Systems×0.3',c:['SCALE'],l:'Scalability investment may look invisible during normal times, but it protects revenue and trust during peak demand.'},
+'3C':{name:'Fake Reviews Scandal',f:a=>a.TRUST*.6+a.DATA*.4,fs:'Trust & Safety×0.6 + Data Systems×0.4',c:['TRUST'],l:'Trust cannot be repaired instantly. It is built through consistent governance investment over time.'},
+'4A':{name:'New Privacy Regulation',f:a=>a.SEC*.5+a.DATA*.3+a.TRUST*.2,fs:'Cybersecurity×0.5 + Data Systems×0.3 + Trust & Safety×0.2',c:['SEC','DATA'],l:'IT systems are not only technical assets. They are the foundation of legal compliance and risk management.'},
+'4B':{name:'Competitor Launches AI Feature',f:a=>a.INNO*.5+a.DATA*.4+a.UX*.1,fs:'Innovation×0.5 + Data Systems×0.4 + User Experience×0.1',c:['DATA','INNO'],l:'Innovation is not created overnight. It depends on data, systems, and technical capabilities accumulated over time.'},
+'4C':{name:'Strategic Partnership Opportunity',f:a=>a.DATA*.4+a.SCALE*.4+a.INNO*.2,fs:'Data Systems×0.4 + Scalability×0.4 + Innovation×0.2',c:['DATA','SCALE'],l:'A platform can only benefit from partnerships if its systems are ready to connect, scale, and share data reliably.'},
+'5A':{name:'Legacy System Bottleneck',f:a=>a.DATA*.4+a.SCALE*.4+a.INNO*.2,fs:'Data Systems×0.4 + Scalability×0.4 + Innovation×0.2',c:['DATA','SCALE'],l:'Early underinvestment in IT systems eventually returns as technical debt.'},
+'5B':{name:'Global Expansion Opportunity',f:a=>a.SCALE*.4+a.SEC*.25+a.DATA*.2+a.UX*.15,fs:'Scalability×0.4 + Cybersecurity×0.25 + Data Systems×0.2 + User Experience×0.15',c:['SCALE','SEC'],l:'Global expansion is not only a marketing challenge. It requires scalable, secure, and reliable systems.'},
+'5C':{name:'Platform Trust Crisis',f:a=>a.TRUST*.4+a.SEC*.3+a.DATA*.2+a.UX*.1,fs:'Trust & Safety×0.4 + Cybersecurity×0.3 + Data Systems×0.2 + User Experience×0.1',c:['TRUST','SEC','DATA'],l:'Long-term platform trust depends on the combined strength of governance, security, data systems, and user experience.'},
+};
+
+let app=null,db=null,auth=null,G={myId:null,myNick:null,role:null,unsub:null,sess:null};
+let SL={SEC:0,DATA:0,SCALE:0,UX:0,TRUST:0,INNO:0};
+let curTab='overview';
+
+// ── Firebase ──
+function getCfg(){try{const s=localStorage.getItem('fb_cfg_v2');return s?JSON.parse(s):null;}catch{return null;}}
+function putCfg(c){localStorage.setItem('fb_cfg_v2',JSON.stringify(c));}
+function initFb(cfg){
+  try{
+    app=initializeApp(cfg,'pitgame');db=getDatabase(app);auth=getAuth(app);
+    return true;
+  }catch(e){
+    if(e.code==='app/duplicate-app'){return !!db;}
+    console.error('Firebase init error:',e);return false;
+  }
+}
+
+async function bootFirebase(){
+  try{
+    const res=await fetch('/.netlify/functions/config',{cache:'no-store'});
+    if(res.ok){
+      const cfg=await res.json();
+      if(cfg&&cfg.databaseURL&&initFb(cfg)){putCfg(cfg);return true;}
+    }
+  }catch(e){console.warn('Netlify config not available:',e);}
+  const localCfg=getCfg();
+  if(localCfg&&initFb(localCfg))return true;
+  return false;
+}
+
+function requireFirebase(){
+  if(db&&auth)return true;
+  alert('Firebase is not configured yet. Open the Firebase setup screen or configure Netlify environment variables.');
+  show('screen-setup');
+  return false;
+}
+
+bootFirebase().then(ok=>{if(!ok)console.warn('Firebase config is missing.');});
+
+// ── Show ──
+window.show=function(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+window.goStudent=function(){show('screen-student-join');}
+window.goProf=function(){show('screen-prof-login');}
+
+window.saveFbConfig=function(){
+  let raw=document.getElementById('fb-input').value.trim();
+  const err=document.getElementById('fb-err');err.style.display='none';
+  const m=raw.match(/\{[\s\S]*\}/);
+  if(!m){err.textContent='No JSON object found. Paste the entire config.';err.style.display='block';return;}
+  let cfg;
+  try{cfg=JSON.parse(m[0]);}catch(e){err.textContent='Invalid JSON: '+e.message;err.style.display='block';return;}
+  if(!cfg.databaseURL){err.textContent='Missing databaseURL. Make sure you created a Realtime Database and copied the full config.';err.style.display='block';return;}
+  try{
+    app=initializeApp(cfg,'pitgame');
+    db=getDatabase(app);
+    auth=getAuth(app);
+    putCfg(cfg);
+    show('screen-landing');
+  }catch(e){err.textContent='Connection failed: '+e.message;err.style.display='block';}
+}
+
+// ── DB helpers ──
+const R=path=>ref(db,'pitgame/'+path);
+const dbGet=async p=>{const s=await get(R(p));return s.exists()?s.val():null;};
+const dbSet=(p,v)=>set(R(p),v);
+const dbUpd=(p,v)=>update(R(p),v);
+const dbListen=(p,cb)=>onValue(R(p),s=>cb(s.exists()?s.val():null));
+const rootUpd=v=>update(ref(db),v);
+const sessionPath=s=>`sessions/${s}`;
+const sessionRef=s=>R(sessionPath(s));
+function normalizeSession(raw){
+  if(!raw)return null;
+  const state=raw.state||{};
+  const history=[];
+  Object.entries(raw.submissions||{}).forEach(([pid,rounds])=>{
+    Object.entries(rounds||{}).forEach(([round,rec])=>{
+      history.push({pid,round:+round,...rec});
+    });
+  });
+  history.sort((a,b)=>(a.round-b.round)||String(a.pid).localeCompare(String(b.pid)));
+  return {...state,players:raw.players||{},scores:raw.scores||{},history};
+}
+async function getSession(sess){
+  const s=await get(sessionRef(sess));
+  return s.exists()?normalizeSession(s.val()):null;
+}
+function listenSession(sess,cb){
+  return onValue(sessionRef(sess),s=>cb(s.exists()?normalizeSession(s.val()):null));
+}
+function sessionUpdate(sess,paths){
+  const upd={};
+  Object.entries(paths).forEach(([k,v])=>{upd[`pitgame/sessions/${sess}/${k}`]=v;});
+  return rootUpd(upd);
+}
+
+// ── Utils ──
+const fmt=n=>{const v=parseFloat(n);return(v>0?'+':'')+(Number.isInteger(v)?v:v.toFixed(1));};
+const cls=n=>n>=0?'pos':'neg';
+const mkId=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const mkSess=()=>Math.random().toString(36).substring(2,8).toUpperCase();
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const arr=v=>Array.isArray(v)?v:Object.values(v||{});
+
+// ── Instructor ──
+window.profLogin=async function(){
+  if(!requireFirebase())return;
+  const pw=document.getElementById('p-pass').value.trim();
+  const e=document.getElementById('p-err');e.style.display='none';
+  try{
+    const res=await fetch('/.netlify/functions/instructor-login',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({password:pw})
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'Incorrect password.');
+    const {token}=data;
+    await signInWithCustomToken(auth,token);
+    G.role='prof';openProf();
+  }catch(err){
+    e.textContent=err.message||'Login failed.';
+    e.style.display='block';
+  }
+}
+
+async function openProf(){
+  if(!requireFirebase())return;
+  show('screen-prof-dashboard');
+  try{
+    let sess=localStorage.getItem('pitgame_instructor_session');
+    let gs=sess?await getSession(sess):null;
+    if(!gs){
+      sess=mkSess();
+      gs={session:sess,round:0,phase:'waiting',events:{}};
+      await sessionUpdate(sess,{state:gs});
+      localStorage.setItem('pitgame_instructor_session',sess);
+    }
+    G.sess=sess;
+    G.sess=gs.session;
+    document.getElementById('p-sess-lbl').textContent=gs.session;
+    if(G.unsub)G.unsub();
+    G.unsub=listenSession(sess,gs=>{if(gs)renderProf(gs);});
+  }catch(err){
+    document.getElementById('p-sess-lbl').textContent='Error';
+    document.getElementById('p-tab-overview').innerHTML=`<div class="card card-amber"><h3>Session could not be created</h3><p>${esc(err.message||err)}</p><p style="margin-top:8px;">Check Firebase Realtime Database rules and make sure the deployed rules match <code>firebase.rules.json</code>.</p></div>`;
+  }
+}
+
+window.resetGame=async function(){
+  if(!requireFirebase()||G.role!=='prof')return;
+  if(!confirm('Reset the entire game? All data will be erased.'))return;
+  const sess=mkSess();
+  const gs={session:sess,round:0,phase:'waiting',events:{}};
+  await sessionUpdate(sess,{state:gs});
+  localStorage.setItem('pitgame_instructor_session',sess);
+  G.sess=sess;
+  if(G.unsub)G.unsub();
+  G.unsub=listenSession(sess,gs=>{if(gs)renderProf(gs);});
+  document.getElementById('p-sess-lbl').textContent=gs.session;
+}
+
+window.profTab=function(el,tab){
+  curTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  ['overview','investments','events'].forEach(t=>document.getElementById('p-tab-'+t).style.display=t===tab?'block':'none');
+}
+
+function renderProf(gs){renderProfOverview(gs);renderProfInv(gs);renderProfEvents(gs);}
+
+function renderProfOverview(gs){
+  const el=document.getElementById('p-tab-overview');if(!el)return;
+  const pl=Object.values(gs.players||{});
+  const r=gs.round||0,sub=r>0?pl.filter(p=>p.submitted===r).length:0;
+  let h=`<div class="metric-grid">
+    <div class="metric"><div class="metric-val">${r||'—'}</div><div class="metric-lbl">Round</div></div>
+    <div class="metric"><div class="metric-val">${pl.length}</div><div class="metric-lbl">Students</div></div>
+    <div class="metric"><div class="metric-val">${r>0?sub+' / '+pl.length:'—'}</div><div class="metric-lbl">Submitted</div></div>
+  </div>`;
+  if(r===0){
+    h+=`<div class="card" style="text-align:center;padding:2rem;"><p style="margin-bottom:14px;">Select event cards in the <strong>Event Cards</strong> tab, then start Round 1.</p><button class="btn btn-primary btn-lg" onclick="startRound(1)">Start Round 1 →</button></div>`;
+  }else{
+    const eid=(gs.events||{})[r],ev=eid?EV[eid]:null;
+    const ptag={invest:'<span class="tag tag-blue">Investing</span>',result:'<span class="tag tag-green">Results Shown</span>',waiting:'<span class="tag tag-gray">Waiting</span>',final:'<span class="tag tag-green">Game Over</span>'}[gs.phase]||'';
+    h+=`<div class="card"><div class="flex-between" style="margin-bottom:10px;"><div><strong>Round ${r}</strong><span style="font-size:13px;color:var(--text2);margin-left:6px;">${STAGE[r]}</span></div>${ptag}</div>`;
+    if(ev&&gs.phase==='result'){const evExp=EV_EXPLAIN[eid]||'';h+=`<div class="event-reveal" style="margin-bottom:12px;"><h3>${esc(ev.name)}</h3><p style="font-size:12px;font-family:'DM Mono',monospace;color:var(--blue);margin-top:4px;margin-bottom:${evExp?'8px':'0'};">${ev.fs}</p>${evExp?`<p style="font-size:12px;color:var(--blue);line-height:1.65;opacity:.9;">${esc(evExp)}</p>`:''}</div>`;}
+    if(gs.phase==='invest'){
+      h+=`<div style="margin-bottom:12px;"><div class="flex-between" style="font-size:13px;color:var(--text2);margin-bottom:5px;"><span>Submissions</span><span>${sub} / ${pl.length}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pl.length>0?Math.round(sub/pl.length*100):0}%"></div></div></div>`;
+      if(!ev)h+=`<p style="color:var(--red);font-size:13px;">⚠ No event card selected for Round ${r}. Go to <strong>Event Cards</strong> tab.</p>`;
+      else h+=`<button class="btn btn-success btn-lg" onclick="revealResult()">Reveal Results →</button>`;
+    }
+    if(gs.phase==='result'){
+      h+=`<div class="btn-group" style="margin-top:4px;">`;
+      if(r<5)h+=`<button class="btn btn-primary btn-lg" onclick="startRound(${r+1})">Start Round ${r+1} →</button>`;
+      else h+=`<button class="btn btn-success btn-xl" onclick="finalizeGame()">🏆 Show Final Rankings</button>`;
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+  if(pl.length>0){
+    const ranked=pl.map(p=>({...p,total:Object.values((gs.scores||{})[p.id]||{}).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.total-a.total);
+    h+=`<div class="card"><h3>Current Standings</h3><div class="rank-table">`;
+    ranked.forEach((p,i)=>{
+      const m=i<3?`<div class="rank-medal ${['medal-1','medal-2','medal-3'][i]}">${i+1}</div>`:`<div style="width:22px;text-align:center;font-size:13px;color:var(--text3);">${i+1}</div>`;
+      h+=`<div class="rank-row">${m}<div class="rank-nick">${esc(p.nick)}</div><div class="rank-score ${cls(p.total)}">${fmt(p.total)} pt</div></div>`;
+    });
+    h+=`</div></div>`;
+  }
+  el.innerHTML=h;
+}
+
+function renderProfInv(gs){
+  const el=document.getElementById('p-tab-investments');if(!el)return;
+  const pl=Object.values(gs.players||{});const r=gs.round||0;
+  if(!pl.length){el.innerHTML='<p style="color:var(--text2);">No students have joined yet.</p>';return;}
+  const hist=arr(gs.history);
+  let h=`<div style="overflow-x:auto;"><table class="inv-table"><thead><tr><th>Nickname</th>${CATS.map(c=>`<th>${CAT_LABEL[c]}</th>`).join('')}<th>Total</th><th>Status</th></tr></thead><tbody>`;
+  pl.forEach(p=>{
+    const inv=hist.find(h=>h.pid===p.id&&h.round===r);
+    const total=Object.values((gs.scores||{})[p.id]||{}).reduce((a,b)=>a+b,0);
+    h+=`<tr><td>${esc(p.nick)}</td>${CATS.map(c=>`<td>${inv?inv.alloc[c]:'—'}</td>`).join('')}<td style="font-weight:600;color:var(--${total>=0?'green':'red'})">${fmt(total)}</td><td>${p.submitted===r?'<span class="status-ok">✓ Done</span>':'<span class="status-wait">⏳ Waiting</span>'}</td></tr>`;
+  });
+  h+=`</tbody></table></div>`;el.innerHTML=h;
+}
+
+function renderProfEvents(gs){
+  const el=document.getElementById('p-tab-events');if(!el)return;
+  let h='';
+  for(let r=1;r<=5;r++){
+    const ic=r===(gs.round||0),sel=(gs.events||{})[r];
+    h+=`<div class="card ${ic?'card-info':''}"><div class="flex-between" style="margin-bottom:10px;"><div><strong>Round ${r}</strong><span style="font-size:12px;color:var(--${ic?'blue':'text2'});margin-left:8px;">${STAGE[r]}</span></div>${ic?'<span class="tag tag-blue">Current</span>':''}</div>
+    <select class="input" onchange="setEvent(${r},this.value)"><option value="">— Select Event Card —</option>${RE[r].map(id=>`<option value="${id}" ${sel===id?'selected':''}>${id} · ${EV[id].name}</option>`).join('')}</select>
+    ${sel?`<p style="font-size:12px;margin-top:8px;font-family:'DM Mono',monospace;">${EV[sel].fs} | Cumulative: ${EV[sel].c.length?EV[sel].c.map(k=>CAT_LABEL[k]).join(', '):'none'}</p>`:''}</div>`;
+  }
+  el.innerHTML=h;
+}
+
+window.setEvent=async(r,eid)=>{if(G.sess)await sessionUpdate(G.sess,{[`state/events/${r}`]:eid||null});};
+window.startRound=async r=>{if(G.sess)await sessionUpdate(G.sess,{'state/round':r,'state/phase':'invest'});};
+window.finalizeGame=async()=>{if(G.sess)await sessionUpdate(G.sess,{'state/phase':'final'});};
+
+window.revealResult=async function(){
+  if(!G.sess)return;
+  const gs=await getSession(G.sess);if(!gs)return;
+  const r=gs.round,eid=(gs.events||{})[r];
+  if(!eid){alert('Select an event card first!');return;}
+  const ev=EV[eid],hist=arr(gs.history),upd={};
+  Object.values(gs.players||{}).forEach(p=>{
+    const inv=hist.find(h=>h.pid===p.id&&h.round===r);if(!inv)return;
+    const a=inv.alloc,rs=ev.f(a),bs=Math.round(rs*10)/10;
+    let bonus=0,pen=0;const cumulDetail={};
+    if(r>=3){ev.c.forEach(cat=>{
+      const ph=hist.filter(h=>h.pid===p.id&&h.round<=r);
+      const ab=ph.filter(h=>(h.alloc[cat]||0)>=10).length,bw=ph.filter(h=>(h.alloc[cat]||0)<5).length;
+      cumulDetail[cat]={above:ab,below:bw,total:r};
+      if(r===3){if(ab>=3)bonus+=10;else if(ab>=2)bonus+=5;if(bw>=3)pen+=10;else if(bw>=2)pen+=5;}
+      else if(r===4){if(ab>=4)bonus+=10;else if(ab>=3)bonus+=5;if(bw>=3)pen+=5;}
+      else{if(ab>=5)bonus+=15;else if(ab>=4)bonus+=10;else if(ab>=3)bonus+=5;if(bw>=3)pen+=10;}
+    });}
+    const fs=Math.round((bs+bonus-pen)*10)/10;
+    upd[`scores/${p.id}/${r}`]=fs;
+    const hi=hist.findIndex(h=>h.pid===p.id&&h.round===r);
+    if(hi>=0)upd[`submissions/${p.id}/${r}/result`]={rs:Math.round(rs),bs,bonus,pen,fs,eid,cumulDetail};
+    upd[`submissions/${p.id}/${r}/allocSnapshot`]=inv.alloc;
+  });
+  upd['state/phase']='result';
+  await sessionUpdate(G.sess,upd);
+};
+
+// ── Student ──
+window.studentJoin=async function(){
+  if(!requireFirebase())return;
+  const nick=document.getElementById('s-nick').value.trim();
+  const sess=document.getElementById('s-sess').value.trim().toUpperCase();
+  const err=document.getElementById('s-err');err.style.display='none';
+  if(!nick){err.textContent='Please enter a nickname.';err.style.display='block';return;}
+  if(sess.length<4){err.textContent='Please enter the session code.';err.style.display='block';return;}
+  if(!auth.currentUser)await signInAnonymously(auth);
+  const gs=await getSession(sess);
+  if(!gs||gs.session!==sess){err.textContent='Session code not found. Check with your instructor.';err.style.display='block';return;}
+  const id=auth.currentUser.uid;G.myId=id;G.myNick=nick;G.role='student';G.sess=sess;
+  await sessionUpdate(sess,{[`players/${id}`]:{id,nick,submitted:0}});
+  document.getElementById('s-nick-display').textContent=nick;
+  show('screen-student-game');resetSliders();
+  if(G.unsub)G.unsub();
+  G.unsub=listenSession(sess,gs=>{if(gs)updateStudent(gs);});
+};
+
+function updateStudent(gs){
+  const r=gs.round||0,phase=gs.phase||'waiting',id=G.myId;
+  const ranked=Object.entries(gs.scores||{}).map(([pid,rd])=>({pid,nick:(gs.players||{})[pid]?.nick||'?',total:Object.values(rd||{}).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.total-a.total);
+  const me=ranked.find(s=>s.pid===id)||{total:0};
+  const rank=ranked.findIndex(s=>s.pid===id)+1;
+  const st=document.getElementById('s-total');st.textContent=fmt(me.total);st.className='metric-val '+cls(me.total);
+  document.getElementById('s-rank').textContent=rank>0?'#'+rank:'—';
+  const mySub=(gs.players||{})[id]?.submitted||0;
+  ['s-phase-wait','s-phase-invest','s-phase-result'].forEach(x=>document.getElementById(x).style.display='none');
+  if(phase==='waiting'||r===0){
+    document.getElementById('s-phase-wait').style.display='block';renderLB('s-lb-wait',ranked,id);
+    if(r===0){renderCatGuide();}else{const cg=document.getElementById('s-cat-guide');if(cg)cg.innerHTML='';}
+  }else if(phase==='invest'){
+    document.getElementById('s-rnum').textContent=r;document.getElementById('s-stage').textContent=STAGE[r];
+    // Reset inputs at the start of each new round
+    if(window._lastRound!==r){window._lastRound=r;SL={SEC:0,DATA:0,SCALE:0,UX:0,TRUST:0,INNO:0};buildSliders();}
+    if(mySub===r){
+      document.getElementById('s-phase-wait').style.display='block';
+      document.getElementById('s-lb-wait').innerHTML=`<div class="card card-success" style="text-align:center;padding:1.5rem;"><div class="status-ok" style="font-size:14px;margin-bottom:8px;">✓ Allocation Submitted</div><p>Waiting for the instructor to reveal results…</p></div>`;
+    }else{document.getElementById('s-phase-invest').style.display='block';}
+  }else if(phase==='result'||phase==='final'){
+    const hist=arr(gs.history);const myH=hist.find(h=>h.pid===id&&h.round===r);
+    if(myH?.result){
+      const res=myH.result,ev=EV[res.eid];
+      document.getElementById('s-res-r').textContent=r;
+      document.getElementById('s-res-name').textContent=ev.name;
+      document.getElementById('s-res-fml').textContent=ev.fs;
+      document.getElementById('s-res-rs').textContent=(+res.rs).toFixed(1);
+      const b=document.getElementById('s-res-bs');b.textContent=(res.bs>=0?'+':'')+parseFloat(res.bs).toFixed(1);b.className='metric-val '+cls(res.bs);
+      const adj=res.bonus-res.pen;
+      const bo=document.getElementById('s-res-adj');bo.textContent=fmt(adj);bo.className='metric-val '+cls(adj);
+      const fs=document.getElementById('s-res-fs');fs.textContent=(res.fs>=0?'+':'')+parseFloat(res.fs).toFixed(1);fs.className='score-big '+cls(res.fs);
+      const expTxt=EV_EXPLAIN[res.eid]||'';
+      // Build cumulative bonus explanation
+      let cumulHtml='';
+      if(r>=3&&ev.c&&ev.c.length>0){
+        const adj=res.bonus-res.pen;
+        const adjSign=adj>0?'+':'';
+        const adjColor=adj>0?'var(--green)':adj<0?'var(--red)':'var(--text2)';
+        const bgColor=adj>0?'var(--green-bg)':adj<0?'var(--red-bg)':'var(--surface2)';
+        const borderColor=adj>0?'var(--green-border)':adj<0?'var(--red-border)':'var(--border)';
+        // Build per-category breakdown with actual history counts
+        let catRows='';
+        ev.c.forEach(catKey=>{
+          const fullName=CAT_LABEL[catKey]||catKey;
+          const detail=res.cumulDetail&&res.cumulDetail[catKey];
+          if(!detail)return;
+          const ab=detail.above,bw=detail.below,total=detail.total;
+          // What threshold gives bonus/penalty for this round
+          let threshBonus=r===3?2:r===4?3:3;
+          let threshMax=r===3?3:r===4?4:5;
+          let threshPen=r===3?2:3;
+          // Outcome for this category
+          let catBonus=0,catPen=0;
+          if(r===3){if(ab>=3)catBonus=10;else if(ab>=2)catBonus=5;if(bw>=3)catPen=10;else if(bw>=2)catPen=5;}
+          else if(r===4){if(ab>=4)catBonus=10;else if(ab>=3)catBonus=5;if(bw>=3)catPen=5;}
+          else{if(ab>=5)catBonus=15;else if(ab>=4)catBonus=10;else if(ab>=3)catBonus=5;if(bw>=3)catPen=10;}
+          const net=catBonus-catPen;
+          const netColor=net>0?'var(--green)':net<0?'var(--red)':'var(--text3)';
+          catRows+=`<div style="margin-top:8px;padding:8px 10px;background:var(--surface);border-radius:var(--r);border:0.5px solid var(--border);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:12px;font-weight:600;color:var(--text);">${fullName}</span>
+              <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${netColor};">${net>0?'+':''}${net}</span>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;">
+              Invested ≥10 pts in <strong>${ab} of ${total} rounds</strong>${ab>=threshBonus?` — qualifies for bonus`:''}.<br>
+              Invested &lt;5 pts in <strong>${bw} of ${total} rounds</strong>${bw>=threshPen?` — penalty applied`:''}. 
+            </div>
+          </div>`;
+        });
+        let cumulMsg='';
+        if(adj>0){
+          cumulMsg=`Your consistent investment in the relevant categories across Rounds 1–${r} earned you a cumulative bonus.`;
+        } else if(adj<0){
+          cumulMsg=`You neglected key categories in earlier rounds. Platforms cannot build these capabilities overnight — past underinvestment now costs you.`;
+        } else {
+          cumulMsg=`No cumulative adjustment this round. The bonus/penalty is based on your investment history across Rounds 1–${r}.`;
+        }
+        cumulHtml=`<div style="margin-top:10px;padding:12px 14px;border-radius:var(--r);background:${bgColor};border:1px solid ${borderColor};">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:${adjColor};">Cumulative Adjustment (Rounds 1–${r})</div>
+            <div style="font-size:18px;font-weight:700;font-family:'DM Mono',monospace;color:${adjColor};">${adjSign}${adj}</div>
+          </div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px;">${cumulMsg}</div>
+          ${catRows}
+        </div>`;
+      }
+      document.getElementById('s-res-learn').innerHTML=
+        (expTxt?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--blue);margin-bottom:5px;">Why this formula?</div><div style="font-size:13px;color:var(--text2);line-height:1.65;">${esc(expTxt)}</div></div><hr style="border:none;border-top:1px solid var(--border);margin:0 0 10px;">`:'')+
+        `<span style="font-size:13px;">💡 <em>${esc(ev.l)}</em></span>`+cumulHtml;
+      // Show investment breakdown
+      const allocEl=document.getElementById('s-res-alloc');
+      if(allocEl&&myH.alloc){
+        const allocData=myH.alloc;
+        // Extract full category names used in formula (text before each ×)
+        const usedCats=ev.fs.split('+').map(s=>s.trim().split('×')[0].trim());
+        const cards=CATS.map(cat=>{
+          const val=allocData[cat]||0;
+          const isKey=usedCats.includes(CAT_LABEL[cat]);
+          const bg=isKey?'var(--blue-bg)':'var(--surface2)';
+          const bc=isKey?'var(--blue-border)':'var(--border)';
+          const tc=isKey?'var(--blue)':'var(--text3)';
+          const vc=isKey?'var(--blue)':'var(--text)';
+          return `<div style="background:${bg};border:1px solid ${bc};border-radius:var(--r);padding:8px 10px;text-align:center;"><div style="font-size:10px;font-weight:600;color:${tc};margin-bottom:2px;line-height:1.2;">${CAT_LABEL[cat]}</div><div style="font-size:18px;font-weight:600;color:${vc};">${val}</div></div>`;
+        }).join('');
+        allocEl.innerHTML=`<div style="margin-top:4px;"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px;">Your Investment</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">${cards}</div><div style="font-size:11px;color:var(--text3);margin-top:6px;">Highlighted categories were used in this round&#39;s scoring formula.</div></div>`;
+      }
+    }
+    document.getElementById('s-phase-result').style.display='block';renderLB('s-lb-result',ranked,id);
+  }
+}
+
+function renderCatGuide(){
+  const el=document.getElementById('s-cat-guide');if(!el)return;
+  const cats=[{key:'SEC',label:'Cybersecurity',icon:'🔒',color:'#1B5FCC',bg:'#EBF0FB',border:'#B8CBF5',what:'Protects the platform from hackers, data breaches, and unauthorized access.',why:'Users trust the platform with personal data and payments. A single breach can destroy years of trust and trigger legal liability.'},
+    {key:'DATA',label:'Data Systems',icon:'📊',color:'#1A7A4A',bg:'#E8F7EE',border:'#A8DEC0',what:'Builds the infrastructure to collect, store, analyze, and act on user data.',why:'Data powers recommendations, personalization, and business decisions. Without it, the platform operates blind.'},
+    {key:'SCALE',label:'Scalability',icon:'⚡',color:'#6B3F9E',bg:'#F0EBFC',border:'#D5C0F5',what:'Expands server capacity and cloud infrastructure to handle growing user traffic.',why:'When the platform goes viral or runs a promotion, the servers must not crash. Downtime = lost users and revenue.'},
+    {key:'UX',label:'User Experience',icon:'✨',color:'#A05A00',bg:'#FEF3E0',border:'#F5C97A',what:'Makes the app fast, intuitive, and enjoyable to use across all devices.',why:'If users find the platform confusing or slow, they leave — no matter how good the underlying product is.'},
+    {key:'TRUST',label:'Trust & Safety',icon:'🛡️',color:'#C0291A',bg:'#FDEEEB',border:'#F5B4AC',what:'Detects and removes fake accounts, fraudulent reviews, spam, and harmful content.',why:'Platform quality depends on the participants. A platform overrun by bots and fake reviews loses all credibility.'},
+    {key:'INNO',label:'Innovation',icon:'🚀',color:'#1E7A8A',bg:'#E2F5F8',border:'#9ADCE6',what:'Develops new AI features, automation tools, APIs, and business model experiments.',why:'Competitors never stop improving. Platforms that stop innovating become obsolete — no matter how large they are.'}];
+  let h=`<div class="card" style="margin-top:12px;">
+    <h3 style="margin-bottom:4px;">📘 Investment Categories</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Each round you allocate 100 points across these six areas. Learn what each one means before the game begins.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">`;
+  cats.forEach(c=>{
+    h+=`<div style="border:1px solid ${c.border};border-radius:var(--rl);padding:12px 14px;background:${c.bg};">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:20px;">${c.icon}</span>
+        <span style="font-size:14px;font-weight:600;color:${c.color};">${c.label}</span>
+      </div>
+      <p style="font-size:13px;color:var(--text);margin-bottom:4px;">${c.what}</p>
+      <p style="font-size:12px;color:var(--text2);"><strong style="color:${c.color};">Why it matters:</strong> ${c.why}</p>
+    </div>`;
+  });
+  h+=`</div></div>`;
+  el.innerHTML=h;
+}
+
+function renderLB(cid,ranked,myId){
+  const el=document.getElementById(cid);if(!el)return;
+  let h=`<div class="card"><h3 style="margin-bottom:12px;">🏆 Leaderboard</h3><div class="rank-table">`;
+  ranked.forEach((s,i)=>{
+    const isMe=s.pid===myId;
+    const med=i<3?`<div class="rank-medal ${['medal-1','medal-2','medal-3'][i]}">${i+1}</div>`:`<div style="width:22px;text-align:center;font-size:13px;color:var(--text3);">${i+1}</div>`;
+    h+=`<div class="rank-row${isMe?' me':''}">${med}<div class="rank-nick">${esc(s.nick)}${isMe?' <span style="font-size:11px;color:var(--amber);">← you</span>':''}</div><div class="rank-score ${cls(s.total)}">${fmt(s.total)} pt</div></div>`;
+  });
+  h+=`</div></div>`;el.innerHTML=h;
+}
+
+// ── Sliders ──
+
+window.resetSliders=function(){SL={SEC:0,DATA:0,SCALE:0,UX:0,TRUST:0,INNO:0};buildSliders();}
+window.onInput=function(cat,v){
+  const val=Math.max(0,Math.min(100,parseInt(v)||0));
+  SL[cat]=val;
+  const el=document.getElementById('si-'+cat);
+  if(el&&el.value!=val)el.value=val;
+  updatePts();
+}
+function updatePts(){
+  const total=Object.values(SL).reduce((a,b)=>a+b,0);
+  const left=100-total;
+  const bar=document.getElementById('total-bar');
+  const numEl=document.getElementById('total-num');
+  const msgEl=document.getElementById('total-msg');
+  if(!bar)return;
+  bar.className='total-bar '+(left===0?'ok':left<0?'over':'under');
+  numEl.textContent=total+' / 100';
+  numEl.style.color=left===0?'var(--green)':left<0?'var(--red)':'var(--amber)';
+  msgEl.textContent=left===0?'✓ Ready to submit!':(left>0?`${left} pts remaining`:`${-left} pts over — reduce some categories`);
+  msgEl.style.color=left===0?'var(--green)':left<0?'var(--red)':'var(--amber)';
+  // Update card borders
+  CATS.forEach(cat=>{
+    const card=document.getElementById('ac-'+cat);
+    if(!card)return;
+    const v=SL[cat];
+    card.className='alloc-item'+(v>0?' filled':'')+(total>100?' over':'');
+  });
+}
+function buildSliders(){
+  const c=document.getElementById('s-sliders');if(!c)return;
+  let h='<div class="alloc-grid">';
+  CATS.forEach(cat=>{
+    h+=`<div class="alloc-item" id="ac-${cat}">
+      <div class="alloc-cat" style="color:${CCOL[cat]};font-size:10px;">${CAT_LABEL[cat]}</div>
+      <input class="alloc-num" type="number" min="0" max="100" value="${SL[cat]||0}" id="si-${cat}"
+        oninput="onInput('${cat}',this.value)"
+        onblur="onInput('${cat}',this.value)"
+        onkeydown="if(event.key==='Tab'){event.preventDefault();const cats=['SEC','DATA','SCALE','UX','TRUST','INNO'];const i=cats.indexOf('${cat}');document.getElementById('si-'+cats[(i+1)%6]).focus();}"
+      />
+    </div>`;
+  });
+  h+='</div>';
+  c.innerHTML=h;updatePts();
+}
+window.submitAlloc=async function(){
+  const total=Object.values(SL).reduce((a,b)=>a+b,0);
+  if(total!==100){alert(`Total is ${total} pt. Must be exactly 100 pt.`);return;}
+  if(!G.sess||!G.myId)return;
+  const gs=await getSession(G.sess);if(!gs)return;
+  const r=gs.round,id=G.myId;
+  const rec={pid:id,round:r,alloc:{...SL}};
+  await sessionUpdate(G.sess,{[`submissions/${id}/${r}`]:rec,[`players/${id}`]:{id,nick:G.myNick,submitted:r}});
+  const m=document.getElementById('s-sub-msg');m.textContent='✓ Allocation submitted!';m.style.color='var(--green)';
+};
+buildSliders();
+</script>
+<div class="footer-banner">If you have any inquiries, please contact <a href="mailto:hyesoo.lee@stern.nyu.edu">hyesoo.lee@stern.nyu.edu</a></div>
+
+</body>
+</html>
