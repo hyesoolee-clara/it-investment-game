@@ -30,7 +30,7 @@ Through this activity, students can better understand the relationship between:
 
 ▶️ Click the image below to watch the game demonstration.
 
-<a href="assets/game.mp4">
+<a href="https://github.com/hyesoolee-clara/it-investment-game/raw/refs/heads/main/assets/game.mp4">
   <img src="assets/Picture1.png" alt="Watch the game demonstration" width="700">
 </a>
 
